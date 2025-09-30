@@ -1,0 +1,40 @@
+.admin-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #007bff;
+  color: white;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid #0056b3;
+}
+
+.admin-navbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.admin-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-navbar-user {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.admin-navbar-button {
+  background-color: white;
+  color: #007bff;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.admin-navbar-button:hover {
+  background-color: #e6e6e6;
+}

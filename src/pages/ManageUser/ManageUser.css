@@ -1,0 +1,26 @@
+/* src/pages/ManageUser/ManageUser.css */
+.manage-user {
+  padding: 20px;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.user-table th, .user-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #f4f4f4;
+}
+
+button {
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}

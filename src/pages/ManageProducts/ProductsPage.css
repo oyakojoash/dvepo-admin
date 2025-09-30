@@ -1,0 +1,21 @@
+.edit-product-page {
+  padding: 2rem;
+}
+
+.edit-product-form {
+  max-width: 500px;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-product-form input,
+.edit-product-form textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

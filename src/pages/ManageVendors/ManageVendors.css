@@ -1,0 +1,36 @@
+.manage-vendors {
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.manage-vendors h1 {
+  font-size: 24px;
+  margin-bottom: 1rem;
+}
+
+.vendor-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.vendor-table th,
+.vendor-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.vendor-table th {
+  background-color: #f4f4f4;
+}
+
+.vendor-logo {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.error {
+  color: red;
+}

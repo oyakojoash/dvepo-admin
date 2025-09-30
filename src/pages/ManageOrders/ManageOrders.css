@@ -1,0 +1,108 @@
+/* ManageOrders.css */
+
+/* Container */
+.manage-orders-container {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.manage-orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.manage-orders-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Search and Filter */
+.search-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.search-filter-row input,
+.search-filter-row select {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 240px;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.orders-table thead {
+  background-color: #f3f4f6;
+}
+
+.orders-table tbody tr {
+  border-top: 1px solid #eee;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.orders-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Button */
+.view-button {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.view-button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Messages */
+.loading-text,
+.error-text,
+.no-orders-text {
+  font-size: 16px;
+  color: #6b7280;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.error-text {
+  color: #dc2626;
+}

@@ -1,4 +1,3 @@
-// src/pages/admin/AdminLogin.jsx
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -21,8 +20,7 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
-  const validatePassword = (pwd) =>
-    pwd.length >= 6; // optional: simple length check, can be expanded
+  const validatePassword = (pwd) => pwd.length >= 6;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -47,13 +45,10 @@ export default function AdminLogin() {
 
     const payload = isLogin ? { email, password } : { fullName, email, password };
 
-    console.log("🔍 isLogin:", isLogin);
-    console.log("📤 URL to send:", url);
-    console.log("📦 Payload:", payload);
-
     try {
-      const { data } = await axios.post(url, payload, { withCredentials: true });
-      
+      // ❌ Remove unused destructuring
+      await axios.post(url, payload, { withCredentials: true });
+
       if (isLogin) {
         // ✅ After login, fetch admin info
         try {
@@ -79,7 +74,6 @@ export default function AdminLogin() {
       console.error("🧵 Full error object:", err);
     } finally {
       setLoading(false);
-      console.log("🛑 Loading finished");
     }
   };
 

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ProductsPage.css';
-import { AdminContext } from "../../context/AdminContext";
-
 
 const EditProductPage = () => {
   const { id } = useParams();

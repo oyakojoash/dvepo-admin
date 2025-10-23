@@ -84,7 +84,7 @@ const CreateProductPage = () => {
 
     const productData = {
       ...details,
-      image: uploadedImageName, // backend expects this as string
+      image: uploadedImageName,
     };
 
     try {
@@ -97,10 +97,13 @@ const CreateProductPage = () => {
       setSuccess("✅ Product created successfully!");
       console.log("✅ Product created:", res.data);
 
-      // reset
+      // reset form
       setDetails({ name: "", price: "", vendorId: "", description: "" });
       setUploadedImageName("");
       setImageFile(null);
+
+      // redirect to products page
+      navigate("/admin/products");
     } catch (err) {
       console.error("❌ Failed to create product:", err);
       setError(err.response?.data?.message || "Server error");
@@ -110,7 +113,7 @@ const CreateProductPage = () => {
   };
 
   // -----------------------------
-  //  Render
+  // Render
   // -----------------------------
   if (adminLoading) return <p>Loading admin info...</p>;
   if (!admin) return <p>Access denied. Only admins can create products.</p>;

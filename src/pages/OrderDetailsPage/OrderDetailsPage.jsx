@@ -1,4 +1,3 @@
-// pages/OrderDetailsPage/OrderDetailsPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -11,24 +10,22 @@ const OrderDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch order by ID
-  const fetchOrder = async () => {
-    try {
-      const res = await axios.get(`/api/admin/orders/${id}`, {
-        withCredentials: true,
-      });
-      setOrder(res.data);
-      setStatus(res.data.status);
-    } catch (err) {
-      setError("Failed to load order details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const res = await axios.get(`/api/admin/orders/${id}`, {
+          withCredentials: true,
+        });
+        setOrder(res.data);
+        setStatus(res.data.status);
+      } catch (err) {
+        setError("Failed to load order details");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchOrder();
-  }, [id]);
+  }, [id]); // ✅ 'id' is the only dependency
 
   const handleStatusUpdate = async () => {
     try {

@@ -24,7 +24,7 @@ export default function AdminLogin() {
   // ------------------------- Conditional Backend URL -------------------------
   const BASE_URL =
     window.location.hostname === "localhost"
-      ? "http://localhost:5000"
+      ? "http://localhost:8080" // Correct port for local backend
       : "https://devpo-backend-production.up.railway.app";
 
   // ------------------------- Form Submission -------------------------
@@ -48,21 +48,17 @@ export default function AdminLogin() {
     const payload = isLogin ? { email, password } : { fullName, email, password };
 
     try {
+      // Login/Register
       await axios.post(url, payload, { withCredentials: true });
 
       if (isLogin) {
-        try {
-          const adminRes = await axios.get(`${BASE_URL}/api/admin/me`, {
-            withCredentials: true,
-          });
-          setAdmin(adminRes.data);
-          setSuccess("✅ Login successful!");
-          navigate("/admin");
-        } catch (adminErr) {
-          console.warn("Failed to fetch admin after login:", adminErr);
-          setSuccess("✅ Login successful!");
-          navigate("/admin");
-        }
+        // Fetch admin session after login
+        const adminRes = await axios.get(`${BASE_URL}/api/admin/me`, {
+          withCredentials: true,
+        });
+        setAdmin(adminRes.data);
+        setSuccess("✅ Login successful!");
+        navigate("/admin");
       } else {
         setSuccess("✅ Admin registered successfully. Please login.");
         setIsLogin(true);
@@ -70,8 +66,8 @@ export default function AdminLogin() {
 
       setForm({ fullName: "", email: "", password: "" });
     } catch (err) {
+      console.error("Full error object:", err);
       setError(err.response?.data?.message || "Something went wrong");
-      console.error("🧵 Full error object:", err);
     } finally {
       setLoading(false);
     }

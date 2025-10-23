@@ -1,88 +1,161 @@
-import React, { useState } from "react";
-import axios from "axios";
+// src/pages/admin/AdminLogin.jsx
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AdminContext } from "../../context/AdminContext";
 import "./AdminLogin.css";
 
-const AdminLogin = () => {
-  const [isSignup, setIsSignup] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function AdminLogin() {
+  const { setAdmin } = useContext(AdminContext); // ✅ Access global admin state
+  const [isLogin, setIsLogin] = useState(true);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const validatePassword = (pwd) =>
+    pwd.length >= 6; // optional: simple length check, can be expanded
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
+    const { fullName, email, password } = form;
+
+    if (!validateEmail(email)) return setError("❌ Enter a valid email");
+    if (!isLogin && !validatePassword(password))
+      return setError("❌ Password must be at least 6 characters");
+
+    setLoading(true);
+
+    const url = isLogin
+      ? "http://localhost:5000/api/admin/login"
+      : "http://localhost:5000/api/admin/register";
+
+    const payload = isLogin ? { email, password } : { fullName, email, password };
+
+    console.log("🔍 isLogin:", isLogin);
+    console.log("📤 URL to send:", url);
+    console.log("📦 Payload:", payload);
 
     try {
-      if (isSignup) {
-        // ✅ Corrected: Admin Register
-        await axios.post(
-          "http://localhost:5000/api/admin/register",
-          { fullName, email, password },
-          { withCredentials: true }
-        );
+      const { data } = await axios.post(url, payload, { withCredentials: true });
+      
+      if (isLogin) {
+        // ✅ After login, fetch admin info
+        try {
+          const adminRes = await axios.get("http://localhost:5000/api/admin/me", {
+            withCredentials: true,
+          });
+          setAdmin(adminRes.data);
+          setSuccess("✅ Login successful!");
+          navigate("/admin");
+        } catch (adminErr) {
+          console.warn("Failed to fetch admin after login:", adminErr);
+          setSuccess("✅ Login successful!");
+          navigate("/admin");
+        }
       } else {
-        // ✅ Corrected: Admin Login
-        await axios.post(
-          "http://localhost:5000/api/admin/login",
-          { email, password },
-          { withCredentials: true }
-        );
+        setSuccess("✅ Admin registered successfully. Please login.");
+        setIsLogin(true);
       }
 
-      navigate("/admin"); // ✅ Redirect after login/register
+      setForm({ fullName: "", email: "", password: "" });
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
+      console.error("🧵 Full error object:", err);
+    } finally {
+      setLoading(false);
+      console.log("🛑 Loading finished");
     }
   };
 
   return (
     <div className="admin-login-container">
       <div className="admin-login-box">
-        <h2>{isSignup ? "Create Admin Account" : "Admin Login"}</h2>
-        {error && <p className="error-text">{error}</p>}
+        <h2>{isLogin ? "Admin Login" : "Create Admin Account"}</h2>
 
-        <form onSubmit={handleSubmit}>
-          {isSignup && (
+        {error && <p className="error-msg">{error}</p>}
+        {success && <p className="success-msg">{success}</p>}
+
+        <form onSubmit={handleSubmit} className="form">
+          {!isLogin && (
             <input
               type="text"
+              name="fullName"
               placeholder="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={form.fullName}
+              onChange={handleChange}
               required
             />
           )}
+
           <input
             type="email"
+            name="email"
             placeholder="Admin Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={handleChange}
             required
           />
-          <input
-            type="password"
-            placeholder="Admin Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">{isSignup ? "Sign Up" : "Login"}</button>
+
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Admin Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: 10,
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                color: "blue",
+                fontSize: "14px",
+              }}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </span>
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Please wait..." : isLogin ? "Login" : "Create Account"}
+          </button>
         </form>
 
-        <p className="toggle-text">
-          {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+        <p style={{ marginTop: "10px" }}>
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <span
-            onClick={() => setIsSignup(!isSignup)}
-            style={{ color: "#007bff", cursor: "pointer" }}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError("");
+              setSuccess("");
+            }}
+            style={{ cursor: "pointer", color: "blue" }}
           >
-            {isSignup ? "Login" : "Sign up"}
+            {isLogin ? "Sign Up" : "Login"}
           </span>
         </p>
       </div>
     </div>
   );
-};
-
-export default AdminLogin;
+}

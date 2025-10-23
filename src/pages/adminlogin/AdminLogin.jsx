@@ -5,14 +5,9 @@ import { AdminContext } from "../../context/AdminContext";
 import "./AdminLogin.css";
 
 export default function AdminLogin() {
-  const { setAdmin } = useContext(AdminContext); // ✅ Access global admin state
+  const { setAdmin } = useContext(AdminContext);
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ fullName: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +21,13 @@ export default function AdminLogin() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ------------------------- Conditional Backend URL -------------------------
+  const BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://devpo-backend-production.up.railway.app";
+
+  // ------------------------- Form Submission -------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -40,19 +42,17 @@ export default function AdminLogin() {
     setLoading(true);
 
     const url = isLogin
-      ? "http://localhost:5000/api/admin/login"
-      : "http://localhost:5000/api/admin/register";
+      ? `${BASE_URL}/api/admin/login`
+      : `${BASE_URL}/api/admin/register`;
 
     const payload = isLogin ? { email, password } : { fullName, email, password };
 
     try {
-      // ❌ Remove unused destructuring
       await axios.post(url, payload, { withCredentials: true });
 
       if (isLogin) {
-        // ✅ After login, fetch admin info
         try {
-          const adminRes = await axios.get("http://localhost:5000/api/admin/me", {
+          const adminRes = await axios.get(`${BASE_URL}/api/admin/me`, {
             withCredentials: true,
           });
           setAdmin(adminRes.data);

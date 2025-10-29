@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import AdminSidebar from '../AdminSidebar/AdminSidebar';
 import AdminNavbar from '../AdminNavbar/AdminNavbar';
-import axios from 'axios';
+import API from '../../adminapi'; // ✅ use centralized API
 import './AdminLayout.css';
 
 const AdminLayout = () => {
@@ -12,11 +12,11 @@ const AdminLayout = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get('http://localhost:5000/api/admin/me', {
-          withCredentials: true,
-        });
+        // ✅ Use API instance (handles cookies + baseURL)
+        await API.get('/api/admin/me');
         setLoading(false);
       } catch (err) {
+        console.error('Admin auth check failed:', err);
         navigate('/admin/login');
       }
     };

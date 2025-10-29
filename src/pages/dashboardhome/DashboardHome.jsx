@@ -1,6 +1,6 @@
-// admin/src/pages/dashboardhome/dashboradhome.jsx
 import React, { useEffect, useState } from 'react';
-import './dashboardhome.css'; // Create this CSS file for styling
+import API from '../../adminapi'; // ✅ use the centralized admin API instance
+import './dashboardhome.css';
 
 const DashboardHome = () => {
   const [stats, setStats] = useState({
@@ -9,18 +9,17 @@ const DashboardHome = () => {
     totalRevenue: 0,
     totalProducts: 0,
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Example: Fetch data from backend
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/admin/stats', {
-          credentials: 'include', // if using cookies
-        });
-        const data = await res.json();
-        setStats(data);
+        // ✅ Use axios instance from adminapi.js
+        const res = await API.get('/api/admin/stats');
+        setStats(res.data);
       } catch (err) {
-        console.error('Failed to load stats', err);
+        console.error('Failed to load stats:', err);
+        setError('❌ Failed to load dashboard statistics');
       }
     };
 
@@ -30,6 +29,9 @@ const DashboardHome = () => {
   return (
     <div className="dashboard-home">
       <h1>Admin Dashboard</h1>
+
+      {error && <p className="error-msg">{error}</p>}
+
       <div className="stats-grid">
         <div className="stat-card">
           <h2>{stats.totalUsers}</h2>
@@ -40,7 +42,7 @@ const DashboardHome = () => {
           <p>Total Orders</p>
         </div>
         <div className="stat-card">
-          <h2>${stats.totalRevenue.toFixed(2)}</h2>
+          <h2>${stats.totalRevenue?.toFixed(2) || 0}</h2>
           <p>Total Revenue</p>
         </div>
         <div className="stat-card">

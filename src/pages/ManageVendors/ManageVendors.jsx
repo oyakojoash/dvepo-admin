@@ -1,83 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import './ManageVendors.css';
+import React, { useEffect, useState } from "react";
+import API from "../../adminapi"; // ✅ Use centralized axios instance
+import "./ManageVendors.css";
 
-export default function ManageVendors() {
+const ManageVendors = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
-    id: '',
-    name: '',
-    logo: '',
-    description: '',
+    id: "",
+    name: "",
+    logo: "",
+    description: "",
   });
 
-  // ✅ Fetch vendors
+  // ✅ Fetch all vendors
   const fetchVendors = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/vendors');
-      if (!res.ok) throw new Error('Failed to fetch vendors');
-      const data = await res.json();
-      setVendors(data);
+      const res = await API.get("/api/vendors");
+      setVendors(res.data);
     } catch (err) {
-      console.error(err);
-      setError('Could not load vendors');
+      console.error("❌ Failed to fetch vendors:", err);
+      setError(err.response?.data?.message || "❌ Could not load vendors");
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Initial data fetch
   useEffect(() => {
     fetchVendors();
   }, []);
 
-  // ✅ Handle form input
+  // ✅ Handle form input changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ Add Vendor
+  // ✅ Add new vendor
   const handleAddVendor = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/vendors', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-
-      if (!res.ok) throw new Error('Failed to add vendor');
-      const newVendor = await res.json();
-      setVendors((prev) => [...prev, newVendor]);
-      setForm({ id: '', name: '', logo: '', description: '' });
+      const res = await API.post("/api/vendors", form);
+      setVendors((prev) => [...prev, res.data]);
+      setForm({ id: "", name: "", logo: "", description: "" });
     } catch (err) {
-      alert('Error adding vendor');
-      console.error(err);
+      console.error("❌ Error adding vendor:", err);
+      alert(err.response?.data?.message || "Error adding vendor");
     }
   };
 
-  // ✅ Delete Vendor
+  // ✅ Delete vendor
   const handleDelete = async (_id) => {
-    if (!window.confirm('Are you sure you want to delete this vendor?')) return;
+    if (!window.confirm("Are you sure you want to delete this vendor?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/vendors/${_id}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) throw new Error('Failed to delete vendor');
+      await API.delete(`/api/vendors/${_id}`);
       setVendors((prev) => prev.filter((v) => v._id !== _id));
     } catch (err) {
-      alert('Error deleting vendor');
-      console.error(err);
+      console.error("❌ Error deleting vendor:", err);
+      alert(err.response?.data?.message || "Error deleting vendor");
     }
   };
 
   return (
     <div className="manage-vendors">
-      <h1>Vendor Management</h1>
+      <h2>🏢 Manage Vendors</h2>
 
-      {/* Add Vendor Form */}
+      {error && <p className="error-msg">{error}</p>}
+
+      {/* ✅ Add Vendor Form */}
       <form className="vendor-form" onSubmit={handleAddVendor}>
         <input
           name="id"
@@ -110,11 +101,11 @@ export default function ManageVendors() {
         <button type="submit">Add Vendor</button>
       </form>
 
-      {/* Vendor Table */}
+      {/* ✅ Vendor Table */}
       {loading ? (
         <p>Loading vendors...</p>
-      ) : error ? (
-        <p className="error">{error}</p>
+      ) : vendors.length === 0 ? (
+        <p>No vendors found.</p>
       ) : (
         <table className="vendor-table">
           <thead>
@@ -132,7 +123,7 @@ export default function ManageVendors() {
                 <td>{vendor.id}</td>
                 <td>
                   <img
-                    src={`http://localhost:5000/${vendor.logo}`}
+                    src={`${API.defaults.baseURL.replace("/api", "")}/${vendor.logo}`}
                     alt={vendor.name}
                     className="vendor-logo"
                   />
@@ -140,7 +131,10 @@ export default function ManageVendors() {
                 <td>{vendor.name}</td>
                 <td>{vendor.description}</td>
                 <td>
-                  <button onClick={() => handleDelete(vendor._id)} className="delete-button">
+                  <button
+                    onClick={() => handleDelete(vendor._id)}
+                    className="delete-button"
+                  >
                     ❌ Delete
                   </button>
                 </td>
@@ -151,4 +145,6 @@ export default function ManageVendors() {
       )}
     </div>
   );
-}
+};
+
+export default ManageVendors;

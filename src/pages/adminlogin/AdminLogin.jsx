@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { AdminContext } from "../../context/AdminContext";
+import adminAPI, { ADMIN_API_BASE_URL } from "../../adminapi"; // ✅ updated import
 import "./AdminLogin.css";
 
 export default function AdminLogin() {
@@ -14,18 +14,13 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  // ------------------------- Validation -------------------------
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const validatePassword = (pwd) => pwd.length >= 6;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  // ------------------------- Conditional Backend URL -------------------------
-  const BASE_URL =
-    window.location.hostname === "localhost"
-      ? "http://localhost:8080" // Correct port for local backend
-      : "https://devpo-backend-production.up.railway.app";
 
   // ------------------------- Form Submission -------------------------
   const handleSubmit = async (e) => {
@@ -41,21 +36,16 @@ export default function AdminLogin() {
 
     setLoading(true);
 
-    const url = isLogin
-      ? `${BASE_URL}/api/admin/login`
-      : `${BASE_URL}/api/admin/register`;
-
+    const url = isLogin ? "/api/admin/login" : "/api/admin/register";
     const payload = isLogin ? { email, password } : { fullName, email, password };
 
     try {
-      // Login/Register
-      await axios.post(url, payload, { withCredentials: true });
+      // ✅ Login or Register using centralized admin API
+      await adminAPI.post(url, payload);
 
       if (isLogin) {
-        // Fetch admin session after login
-        const adminRes = await axios.get(`${BASE_URL}/api/admin/me`, {
-          withCredentials: true,
-        });
+        // ✅ Fetch admin session after login
+        const adminRes = await adminAPI.get("/api/admin/me");
         setAdmin(adminRes.data);
         setSuccess("✅ Login successful!");
         navigate("/admin");

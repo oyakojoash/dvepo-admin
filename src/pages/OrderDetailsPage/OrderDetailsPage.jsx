@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import API from "../../adminapi"; // ✅ Import centralized axios instance
 import "./OrderDetailsPage.css";
 
 const OrderDetailsPage = () => {
@@ -10,33 +10,35 @@ const OrderDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ✅ Fetch order details
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`/api/admin/orders/${id}`, {
-          withCredentials: true,
-        });
+        const res = await API.get(`/api/admin/orders/${id}`);
         setOrder(res.data);
         setStatus(res.data.status);
       } catch (err) {
-        setError("Failed to load order details");
+        console.error("Fetch order error:", err);
+        setError(
+          err.response?.data?.message || "❌ Failed to load order details"
+        );
       } finally {
         setLoading(false);
       }
     };
     fetchOrder();
-  }, [id]); // ✅ 'id' is the only dependency
+  }, [id]);
 
+  // ✅ Handle status update
   const handleStatusUpdate = async () => {
     try {
-      await axios.patch(
-        `/api/admin/orders/${id}/status`,
-        { status },
-        { withCredentials: true }
-      );
-      alert("Order status updated successfully.");
+      await API.patch(`/api/admin/orders/${id}/status`, { status });
+      alert("✅ Order status updated successfully.");
     } catch (err) {
-      alert("Failed to update status");
+      console.error("Status update error:", err);
+      alert(
+        err.response?.data?.message || "❌ Failed to update order status."
+      );
     }
   };
 
@@ -57,7 +59,9 @@ const OrderDetailsPage = () => {
       <div className="section">
         <h3>Shipping Address</h3>
         <p>{order.shippingAddress.street}</p>
-        <p>{order.shippingAddress.city}, {order.shippingAddress.country}</p>
+        <p>
+          {order.shippingAddress.city}, {order.shippingAddress.country}
+        </p>
         <p>{order.shippingAddress.postalCode}</p>
       </div>
 
@@ -83,7 +87,9 @@ const OrderDetailsPage = () => {
             ))}
           </tbody>
         </table>
-        <p className="total"><strong>Total:</strong> UGX {order.totalPrice.toLocaleString()}</p>
+        <p className="total">
+          <strong>Total:</strong> UGX {order.totalPrice.toLocaleString()}
+        </p>
       </div>
 
       <div className="section">

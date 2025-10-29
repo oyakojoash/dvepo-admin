@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../adminapi'; // ✅ use centralized admin API instance
 import './AdminNavbar.css';
 
 const AdminNavbar = () => {
@@ -10,9 +10,8 @@ const AdminNavbar = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get('http://localhost:5000/api/admin/me', {
-          withCredentials: true,
-        });
+        // ✅ Automatically includes baseURL + cookies
+        await API.get('/api/admin/me');
         setIsLoggedIn(true);
       } catch {
         setIsLoggedIn(false);
@@ -28,11 +27,7 @@ const AdminNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        'http://localhost:5000/api/auth/logout',
-        {},
-        { withCredentials: true }
-      );
+      await API.post('/api/auth/logout', {}); // ✅ uses same instance
       setIsLoggedIn(false);
       navigate('/admin/login');
     } catch (err) {

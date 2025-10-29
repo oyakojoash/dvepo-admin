@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../../context/AdminContext";
+import API, { API_BASE_URL } from "../../adminapi";
 import "./CreateProductPage.css";
 
 const CreateProductPage = () => {
@@ -50,11 +50,9 @@ const CreateProductPage = () => {
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/images/upload",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await API.post("/api/images/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (res.data?.filename) {
         setUploadedImageName(res.data.filename);
@@ -72,7 +70,7 @@ const CreateProductPage = () => {
   };
 
   // -----------------------------
-  // 3️⃣ Final Submit (combine both)
+  // 3️⃣ Final Submit
   // -----------------------------
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
@@ -82,27 +80,19 @@ const CreateProductPage = () => {
     setError("");
     setSuccess("");
 
-    const productData = {
-      ...details,
-      image: uploadedImageName,
-    };
+    const productData = { ...details, image: uploadedImageName };
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/products",
-        productData,
-        { withCredentials: true }
-      );
-
+      const res = await API.post("/api/products", productData);
       setSuccess("✅ Product created successfully!");
       console.log("✅ Product created:", res.data);
 
-      // reset form
+      // Reset form
       setDetails({ name: "", price: "", vendorId: "", description: "" });
       setUploadedImageName("");
       setImageFile(null);
 
-      // redirect to products page
+      // Redirect
       navigate("/admin/products");
     } catch (err) {
       console.error("❌ Failed to create product:", err);
@@ -125,7 +115,7 @@ const CreateProductPage = () => {
         {error && <p className="error-text">{error}</p>}
         {success && <p className="success-text">{success}</p>}
 
-        {/* ---------------- STEP 1 ---------------- */}
+        {/* STEP 1: Upload Image */}
         <form onSubmit={handleImageUpload} className="image-upload-form">
           <h3>1️⃣ Upload Image</h3>
           <input type="file" accept="image/*" onChange={handleFileChange} required />
@@ -145,7 +135,7 @@ const CreateProductPage = () => {
 
         <hr style={{ margin: "25px 0" }} />
 
-        {/* ---------------- STEP 2 ---------------- */}
+        {/* STEP 2: Product Details */}
         <form className="product-details-form">
           <h3>2️⃣ Enter Product Details</h3>
           <label>Name</label>
@@ -174,7 +164,7 @@ const CreateProductPage = () => {
 
         <hr style={{ margin: "25px 0" }} />
 
-        {/* ---------------- STEP 3 ---------------- */}
+        {/* STEP 3: Submit Product */}
         <form onSubmit={handleFinalSubmit} className="final-submit-form">
           <h3>3️⃣ Submit Product</h3>
           <p><strong>Image:</strong> {uploadedImageName || "No image uploaded"}</p>

@@ -10,7 +10,7 @@ export const AdminProvider = ({ children }) => {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const res = await API.get("/admin/me"); // ✅ use configured API instance
+        const res = await API.get("api/admin/me"); // ✅ use configured API instance
         setAdmin(res.data);
       } catch (error) {
         console.error("Failed to fetch admin:", error.message);

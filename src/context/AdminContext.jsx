@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import API from "../../adminapi"; // ✅ central API instance
+import API from "../adminapi"; // ✅ central API instance
 
 export const AdminContext = createContext();
 

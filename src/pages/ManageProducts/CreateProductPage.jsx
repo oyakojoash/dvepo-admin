@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../../context/AdminContext";
-import API, { API_BASE_URL } from "../../adminapi";
+import API from "../../adminapi";
 import "./CreateProductPage.css";
 
 const CreateProductPage = () => {

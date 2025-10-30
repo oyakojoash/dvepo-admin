@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API, { API_BASE_URL } from '../../adminapi'; // ✅ Import axios instance
+import API from '../../adminapi'; // ✅ Import axios instance
 import './ProductsPage.css';
 
 const EditProductPage = () => {

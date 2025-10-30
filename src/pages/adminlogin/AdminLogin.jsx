@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../../context/AdminContext";
-import adminAPI, { ADMIN_API_BASE_URL } from "../../adminapi"; // ✅ updated import
+import  API  from "../../adminapi"; // ✅ updated import
 import "./AdminLogin.css";
 
 export default function AdminLogin() {
@@ -41,11 +41,11 @@ export default function AdminLogin() {
 
     try {
       // ✅ Login or Register using centralized admin API
-      await adminAPI.post(url, payload);
+      await API.post(url, payload);
 
       if (isLogin) {
         // ✅ Fetch admin session after login
-        const adminRes = await adminAPI.get("/api/admin/me");
+        const adminRes = await API.get("/api/admin/me");
         setAdmin(adminRes.data);
         setSuccess("✅ Login successful!");
         navigate("/admin");

@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../adminapi"; // ✅ central API instance
 
 export const AdminContext = createContext();
 
@@ -10,9 +10,10 @@ export const AdminProvider = ({ children }) => {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/admin/me", { withCredentials: true });
+        const res = await API.get("/admin/me"); // ✅ use configured API instance
         setAdmin(res.data);
-      } catch {
+      } catch (error) {
+        console.error("Failed to fetch admin:", error.message);
         setAdmin(null);
       } finally {
         setLoading(false);

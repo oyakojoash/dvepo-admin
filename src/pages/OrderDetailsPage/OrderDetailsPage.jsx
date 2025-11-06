@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../../adminapi"; // ✅ Import centralized axios instance
 import "./OrderDetailsPage.css";
 
 const OrderDetailsPage = () => {
   const { id } = useParams(); // Order ID from URL
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
@@ -42,9 +43,26 @@ const OrderDetailsPage = () => {
     }
   };
 
+  // ✅ Handle order delete
+  const handleDeleteOrder = async () => {
+    if (!window.confirm("⚠️ Are you sure you want to delete this order?")) return;
+    try {
+      await API.delete(`/api/admin/orders/${id}`);
+      alert("🗑️ Order deleted successfully.");
+      navigate("/admin/manage-orders");
+    } catch (err) {
+      console.error("Delete order error:", err);
+      alert(err.response?.data?.message || "❌ Failed to delete order.");
+    }
+  };
+
   if (loading) return <p>Loading order...</p>;
   if (error) return <p className="error">{error}</p>;
   if (!order) return null;
+
+  // ✅ Safe access to user info
+  const user = order.user || order.userInfo || {};
+  const phone = order.userInfo?.phone || "N/A";
 
   return (
     <div className="order-details-container">
@@ -52,17 +70,9 @@ const OrderDetailsPage = () => {
 
       <div className="section">
         <h3>Customer Info</h3>
-        <p><strong>Name:</strong> {order.user?.name}</p>
-        <p><strong>Email:</strong> {order.user?.email}</p>
-      </div>
-
-      <div className="section">
-        <h3>Shipping Address</h3>
-        <p>{order.shippingAddress.street}</p>
-        <p>
-          {order.shippingAddress.city}, {order.shippingAddress.country}
-        </p>
-        <p>{order.shippingAddress.postalCode}</p>
+        <p><strong>Name:</strong> {user.name || "N/A"}</p>
+        <p><strong>Email:</strong> {user.email || "N/A"}</p>
+        <p><strong>Phone:</strong> {phone}</p>
       </div>
 
       <div className="section">
@@ -72,7 +82,7 @@ const OrderDetailsPage = () => {
             <tr>
               <th>Name</th>
               <th>Qty</th>
-              <th>Price (UGX)</th>
+              <th>Price (ksh)</th>
               <th>Subtotal</th>
             </tr>
           </thead>
@@ -88,7 +98,7 @@ const OrderDetailsPage = () => {
           </tbody>
         </table>
         <p className="total">
-          <strong>Total:</strong> UGX {order.totalPrice.toLocaleString()}
+          <strong>Total:</strong> ksh {order.totalPrice.toLocaleString()}
         </p>
       </div>
 
@@ -102,6 +112,12 @@ const OrderDetailsPage = () => {
           <option value="cancelled">Cancelled</option>
         </select>
         <button onClick={handleStatusUpdate}>Update Status</button>
+      </div>
+
+      <div className="section danger">
+        <button onClick={handleDeleteOrder} className="delete-btn">
+          🗑️ Delete Order
+        </button>
       </div>
     </div>
   );

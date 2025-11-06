@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./ManageOrders.css";
+import API from "../../adminapi";
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -15,7 +16,7 @@ const ManageOrders = () => {
   // ✅ Fetch Orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("/api/admin/orders", {
+      const res = await API.get("/api/admin/orders", {
         withCredentials: true, // ✅ ensures cookie is sent
       });
       setOrders(res.data);
